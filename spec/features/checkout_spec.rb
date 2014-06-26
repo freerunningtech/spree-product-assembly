@@ -65,7 +65,7 @@ describe "Checkout" do
 
   end
 
-  context 'purchasing an assembly', js: true do
+  context 'purchasing an assembly' do
     context 'and the part as individual sale' do
       context 'and the products are not backorderable' do
         before { Spree::StockItem.update_all backorderable: false }
