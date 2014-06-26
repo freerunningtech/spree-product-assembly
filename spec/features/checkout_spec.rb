@@ -65,6 +65,42 @@ describe "Checkout" do
 
   end
 
+  context 'purchasing an assembly', js: true do
+    context 'and the part as individual sale' do
+      context 'and the products are not backorderable' do
+        before { Spree::StockItem.update_all backorderable: false }
+
+        context 'and there is enough stock to fufill the order' do
+          before do
+            variant.stock_items.first.set_count_on_hand 2
+          end
+
+          it 'can proceed through checkout' do
+            add_product_to_cart variant.product
+            add_product_to_cart product
+            click_button "Checkout"
+            expect(current_path).to eql(spree.checkout_state_path("address"))
+          end
+        end
+
+        context "and the part doesn't have enough stock to fill the order" do
+          before do
+            variant.stock_items.first.set_count_on_hand 1
+          end
+
+          it 'cannot proceed to checkout' do
+            add_product_to_cart variant.product
+            add_product_to_cart product
+            click_button "Checkout"
+
+            expect(current_path).to eql(spree.cart_path)
+            expect(page).to have_content "#{variant.name} is out of stock"
+          end
+        end
+      end
+    end
+  end
+
 
   def fill_in_address
     address = "order_bill_address_attributes"
