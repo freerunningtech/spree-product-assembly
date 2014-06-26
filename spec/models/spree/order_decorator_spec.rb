@@ -6,7 +6,11 @@ describe Spree::Order do
     let(:cinco_food_tube) { create :base_product, name: 'cinco food tube' }
     let(:cinco_pack) { create :assembly, name: 'cinco pack', parts: [[cinco_food_tube.master, 1]] }
 
-    subject { order.validate_parts_supply }
+    subject { order.valid? }
+
+    context 'an order with no line_items' do
+      it { expect(order).to be_valid }
+    end
 
     before do
       allow_any_instance_of(Spree::StockItem).to receive(:backorderable).
@@ -44,12 +48,16 @@ describe Spree::Order do
 
         create :line_item, variant: cinco_food_tube.master, quantity: 1,
           order: order
+
+        order.reload
       end
+
       it 'adds an error to the order' do
         # cinco pack has 1 x food tubes
         # order has 2 x cinco pack, 1 x food tube, for a total of 3 x food tube's
         # 2 food tube's in stock
         subject
+        expect(order.errors.size).to eq 1
         expect(order.errors.full_messages.first).to match(/cinco food tube is out of stock/)
       end
     end
