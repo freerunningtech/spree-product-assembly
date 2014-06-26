@@ -16,7 +16,7 @@ describe "Checkout" do
 
   shared_context "purchases product with part included" do
     before do
-      add_product_to_cart
+      add_product_to_cart product
       click_button "Checkout"
 
       fill_in "order_email", :with => "ryan@spreecommerce.com"
@@ -50,10 +50,9 @@ describe "Checkout" do
 
     context "ordering assembly and the part as individual sale" do
       before do
-        visit spree.root_path
-        click_link variant.product.name
-        click_button "add-to-cart-button"
+        add_product_to_cart variant.product
       end
+
       include_context "purchases product with part included"
 
       it "views parts bundled and not" do
@@ -78,7 +77,7 @@ describe "Checkout" do
     fill_in "#{address}_phone", :with => "(555) 555-5555"
   end
 
-  def add_product_to_cart
+  def add_product_to_cart product
     visit spree.root_path
     click_link product.name
     click_button "add-to-cart-button"
