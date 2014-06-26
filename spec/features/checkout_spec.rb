@@ -4,7 +4,6 @@ describe "Checkout" do
   let!(:country) { create(:country, :name => "United States", :states_required => true) }
   let!(:state) { create(:state, :name => "Ohio", :country => country) }
   let!(:shipping_method) { create(:shipping_method) }
-  let!(:stock_location) { create(:stock_location) }
   let!(:payment_method) { create(:check_payment_method) }
   let!(:zone) { create(:zone) }
 
