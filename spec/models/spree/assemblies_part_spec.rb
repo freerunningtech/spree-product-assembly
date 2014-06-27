@@ -18,7 +18,7 @@ module Spree
 
     describe '.available_count' do
       let(:assembly_part) { assembly.assemblies_parts.first }
-      let(:assembly) { create :assembly, parts: [[variant, 2 ]] }
+      let(:assembly) { create :assembly, parts: { variant => 2 }  }
 
       before do
         variant.stock_items.first.adjust_count_on_hand 3
