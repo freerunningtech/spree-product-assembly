@@ -69,17 +69,17 @@ describe Spree::Product do
   end
 
   describe '#update_assembly_inventory!' do
-    context 'when the product is an assembly' do
-      let!(:location_a) { create :stock_location }
-      let!(:location_b) { create :stock_location }
+    let!(:location_a) { create :stock_location }
+    let!(:location_b) { create :stock_location }
 
+    let!(:man_nip) { create :variant_with_stock,
+                      stock: { location_a => 2,
+                              location_b => 5 } }
+
+    context 'when the product is an assembly' do
       let!(:cinco_fone) { create :variant_with_stock,
                           stock: { location_a => 1,
                                    location_b => 2 } }
-
-      let!(:man_nip) { create :variant_with_stock,
-                       stock: { location_a => 2,
-                                location_b => 5 } }
 
       let!(:cinco_kit) { create :assembly,
                          parts: { cinco_fone => 1,
@@ -94,7 +94,11 @@ describe Spree::Product do
     end
 
     context 'when the product is not an assembly' do
-      it 'does nothing'
+      it 'does nothing' do
+        man_nip.product.update_assembly_inventory!
+        expect(location_a.stock_item(man_nip).count_on_hand).to eq 2
+        expect(location_b.stock_item(man_nip).count_on_hand).to eq 5
+      end
     end
   end
 end
