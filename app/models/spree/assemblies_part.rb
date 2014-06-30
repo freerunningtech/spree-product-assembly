@@ -12,5 +12,9 @@ module Spree
     def available_count
       part.total_on_hand / count
     end
+
+    def count_by_stock_location
+      Hash[part.stock_items.map { |si| [si.stock_location, (si.count_on_hand / count)] }]
+    end
   end
 end
