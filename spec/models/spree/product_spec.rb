@@ -87,9 +87,9 @@ describe Spree::Product do
 
       before { cinco_kit.update_assembly_inventory! }
 
-      it 'sets the inventory level to the minimum part level for each stock location' do
-        expect(location_a.stock_item(cinco_kit).count_on_hand).to eq 1
-        expect(location_b.stock_item(cinco_kit).count_on_hand).to eq 2
+      it'sets the inventory level to the minimum part level for each stock location' do
+        expect(location_a.stock_item(cinco_kit.master).count_on_hand).to eq 1
+        expect(location_b.stock_item(cinco_kit.master).count_on_hand).to eq 2
       end
     end
 
