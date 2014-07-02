@@ -73,7 +73,7 @@ describe Spree::Product do
     let!(:location_b) { create :stock_location }
 
     let!(:man_nip) { create :variant_with_stock,
-                      stock: { location_a => 2,
+                     stock: { location_a => 2,
                               location_b => 5 } }
 
     context 'when the product is an assembly' do
@@ -85,11 +85,26 @@ describe Spree::Product do
                          parts: { cinco_fone => 1,
                                   man_nip => 2 } }
 
-      before { cinco_kit.update_assembly_inventory! }
+      subject { cinco_kit.update_assembly_inventory! }
 
-      it 'sets the inventory level to the minimum part level for each stock location' do
-        expect(location_a.stock_item(cinco_kit).count_on_hand).to eq 1
-        expect(location_b.stock_item(cinco_kit).count_on_hand).to eq 2
+      shared_examples_for 'an assembly' do
+        it'sets the inventory level to the minimum part level for each stock location' do
+          subject
+          expect(location_a.stock_item(cinco_kit.master).count_on_hand).to eq 1
+          expect(location_b.stock_item(cinco_kit.master).count_on_hand).to eq 2
+        end
+      end
+
+      it_behaves_like 'an assembly'
+
+      context "when the assembly doesn't have a stock item at one of the locations" do
+        before { cinco_kit.master.stock_items.destroy_all }
+
+        it_behaves_like 'an assembly'
+
+        it 'creates the stock items' do
+          expect{ subject }.to change{cinco_kit.stock_items.size}.by(3)
+        end
       end
     end
 
