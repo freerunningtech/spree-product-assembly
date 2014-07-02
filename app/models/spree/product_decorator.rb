@@ -59,7 +59,7 @@ Spree::Product.class_eval do
         [ current_min, quantity ].min
       end
     end.each_pair do |location, quantity|
-      location.stock_item(self.master).set_count_on_hand quantity
+      location.stock_item_or_create(self.master).set_count_on_hand quantity
     end
   end
 
