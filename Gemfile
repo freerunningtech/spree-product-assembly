@@ -15,4 +15,5 @@ end
 group :test do
   gem 'capybara', '~> 2.1.0'
   gem 'poltergeist'
+  gem 'pry-rescue'
 end
