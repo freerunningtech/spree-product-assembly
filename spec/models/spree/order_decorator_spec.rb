@@ -6,7 +6,7 @@ describe Spree::Order do
     let(:cinco_food_tube) { create :base_product, name: 'cinco food tube' }
     let(:cinco_pack) { create :assembly, name: 'cinco pack', parts: { cinco_food_tube.master => 1 } }
 
-    subject { order.valid? }
+    subject { order.valid? :checkout }
 
     context 'an order with no line_items' do
       it { expect(order).to be_valid }
