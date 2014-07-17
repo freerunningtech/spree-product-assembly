@@ -1,6 +1,6 @@
 module Spree
   Order.class_eval do
-    validate :validate_parts_supply
+    validate :validate_parts_supply, on: :checkout
 
     def validate_parts_supply
       quantity_by_variant = self.line_items.map(&:quantity_by_variant).flatten

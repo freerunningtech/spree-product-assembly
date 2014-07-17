@@ -6,7 +6,7 @@ describe Spree::Order do
     let(:cinco_food_tube) { create :base_product, name: 'cinco food tube' }
     let(:cinco_pack) { create :assembly, name: 'cinco pack', parts: { cinco_food_tube.master => 1 } }
 
-    subject { order.valid? }
+    subject { order.valid? :checkout }
 
     context 'an order with no line_items' do
       it { expect(order).to be_valid }
@@ -20,6 +20,13 @@ describe Spree::Order do
     end
 
     shared_examples_for "a fulfillable order" do
+      it 'does not add an error' do
+        subject
+        expect(order.errors).to be_empty
+      end
+    end
+
+    context 'when the items are capable of backorder' do
       before do
         allow_any_instance_of(Spree::StockItem).to receive(:backorderable).
           and_return true
@@ -31,17 +38,10 @@ describe Spree::Order do
           order: order
       end
 
-      it 'does not add an error' do
-        subject
-        expect(order.errors).to be_empty
-      end
-    end
-
-    context 'when the items are capable of backorder' do
       it_behaves_like 'a fulfillable order'
     end
 
-    context "when there isn't enough stock to fulfill both a line item and a assembly" do
+    context "when there isn't enough stock to fulfill both a line item and an assembly" do
       before do
         create :line_item, variant: cinco_pack.master, quantity: 2,
           order: order
