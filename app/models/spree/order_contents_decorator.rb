@@ -1,8 +1,8 @@
 Spree::OrderContents.class_eval do
-  alias_method :old_update_cart, :update_cart
 
-  def update_cart(params)
+  durably_decorate :update_cart, mode: 'strict', sha: 'f3e37d0ffd8c089d1b246e268679d5430886f2c2' do |params|
     order.assign_attributes( params )
-    old_update_cart( params ) if order.valid? :checkout
+    original_update_cart( params ) if order.valid? :checkout
   end
+
 end
