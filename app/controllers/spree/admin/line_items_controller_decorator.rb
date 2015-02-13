@@ -1,5 +1,5 @@
 module Spree
-  module Admin
+  module Api
     LineItemsController.class_eval do
       def update
         @line_item.update_attributes(line_item_params)
