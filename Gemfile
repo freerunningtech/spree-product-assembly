@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec
 
-gem 'spree', github: 'spree/spree', :branch => '2-4-stable'
+gem 'spree', github: 'spree/spree', :branch => '2-3-stable'
 
 gem 'pry-rails'
 gem 'pg'
