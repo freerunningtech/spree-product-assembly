@@ -19,12 +19,13 @@ module Spree
     end
 
     private
-      def update_inventory
-        if self.product.assembly? && order.completed?
-          OrderInventoryAssembly.new(self).verify(target_shipment)
-        else
-          OrderInventory.new(self.order).verify(self, target_shipment)
-        end
+    
+    def update_inventory
+      if self.product.assembly? && order.completed?
+        OrderInventoryAssembly.new(self).verify(target_shipment)
+      else
+        OrderInventory.new(order, self).verify(target_shipment)
       end
+    end
   end
 end
