@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Spree::Product do
   before(:each) do
     @product = FactoryGirl.create(:product, :name => "Foo Bar")
-    @master_variant = Spree::Variant.where(is_master: true).find_by_product_id(@product.id)
+    @master_variant = Spree::Variant.where(is_master: true).find_by(product_id: @product.id)
   end
-    
+
   describe "Spree::Product.active" do
     before(:each) do
       Spree::Product.delete_all
@@ -49,11 +49,11 @@ describe Spree::Product do
       @product.add_part @part1.master, 1
       @product.add_part @part2.master, 4
     end
-    
+
     it "is an assembly" do
       @product.should be_assembly
     end
-    
+
 
     it "cannot be part" do
       @product.should be_assembly

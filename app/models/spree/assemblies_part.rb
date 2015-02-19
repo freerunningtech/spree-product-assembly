@@ -4,7 +4,7 @@ module Spree
     belongs_to :part, :class_name => "Spree::Variant", :foreign_key => "part_id"
 
     def self.get(assembly_id, part_id)
-      find_by_assembly_id_and_part_id(assembly_id, part_id)
+      find_by(assembly_id: assembly_id, part_id: part_id)
     end
 
     def save
