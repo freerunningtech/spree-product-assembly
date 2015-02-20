@@ -42,8 +42,7 @@ module Spree
       end
 
       context "units are not associated with a line item" do
-        let(:order) { create(:shipped_order) }
-        let(:shipment) { order.shipments.first }
+        let(:shipment) { create(:shipment, order: create(:order_with_line_items)) }
 
         it "searches for line item if inventory unit doesn't have one" do
           shipment.manifest.last.line_item.should_not be_blank

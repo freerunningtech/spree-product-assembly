@@ -9,7 +9,7 @@ module Spree
     let(:inventory) { double('inventory') }
 
     context "bundle parts stock" do
-      let(:parts) { (1..2).map { create(:variant) } }
+      let(:parts) { create_list(:variant, 2) }
 
       before { product.parts << parts }
 
@@ -27,10 +27,10 @@ module Spree
         end
       end
 
-      context "in stock" do
+      context "all parts are in stock" do
         before do
-          expect(parts[0]).to be_in_stock
-          expect(parts[1]).to be_in_stock
+          allow(parts[0]).to receive(:in_stock?).and_return(true)
+          allow(parts[1]).to receive(:in_stock?).and_return(true)
         end
 
         it "saves line item quantity" do
@@ -64,8 +64,8 @@ module Spree
 
     context "updates regular line item" do
       it "verifies inventory units via OrderInventory" do
-        OrderInventory.should_receive(:new).with(line_item.order).and_return(inventory)
-        inventory.should_receive(:verify).with(line_item, line_item.target_shipment)
+        OrderInventory.should_receive(:new).with(line_item.order, line_item).and_return(inventory)
+        inventory.should_receive(:verify).with(line_item.target_shipment)
         line_item.save
       end
     end

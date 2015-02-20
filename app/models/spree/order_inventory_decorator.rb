@@ -6,7 +6,7 @@ module Spree
     # than variants. Because a variant can be associated with more than one
     # line item in the same shipment. Fetching inventory units through variants
     # then will likely return the wrong number of units.
-    def verify(line_item, shipment = nil)
+    def verify(shipment = nil)
       if order.completed? || shipment.present?
 
         units = inventory_units_for_item(line_item)

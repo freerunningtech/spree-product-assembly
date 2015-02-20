@@ -4,7 +4,7 @@ module Spree
   describe OrderInventory do
     let(:order) { Order.create }
 
-    subject { OrderInventory.new(order) }
+    subject { OrderInventory.new(order, order.line_items.first) }
 
     context "regular orders, not mixing parts and regular products" do
       let(:variant) { create(:variant) }
@@ -18,23 +18,28 @@ module Spree
       end
 
       context "order is complete" do
-        before { order.finalize! }
+        before do
+          mailer = double
+          allow(mailer).to receive(:deliver)
+          allow(OrderMailer).to receive(:confirm_email).and_return(mailer)
+          order.finalize!
+        end
 
         it "unstock items" do
           expect {
-            subject.verify(order.line_items.first, shipment)
+            subject.verify(shipment)
           }.to change { stock_item.reload.count_on_hand }.by(-10)
         end
       end
 
       it "doesn't unstock items when order is incomplete" do
         expect {
-          subject.verify(order.line_items.first, shipment)
+          subject.verify(shipment)
         }.not_to change { stock_item.reload.count_on_hand }
       end
 
       it "properly creates inventory units" do
-        subject.verify(order.line_items.first, shipment)
+        subject.verify(shipment)
         expect(InventoryUnit.count).to eq 10
       end
     end
