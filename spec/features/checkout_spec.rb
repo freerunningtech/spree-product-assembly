@@ -4,20 +4,25 @@ describe "Checkout", type: :feature do
   let!(:country) { create(:country, :name => "United States", :states_required => true) }
   let!(:state) { create(:state, :name => "Ohio", :country => country) }
   let!(:shipping_method) { create(:shipping_method) }
-  let!(:stock_location) { create(:stock_location) }
+  let!(:stock_location) { create(:stock_location, backorderable_default: false) }
   let!(:payment_method) { create(:check_payment_method) }
   let!(:zone) { create(:zone) }
 
   let(:product) { create(:product, :name => "RoR Mug") }
   let(:variant) { create(:variant) }
+  let(:count_on_hand){ 2 }
 
   stub_authorization!
 
   before { product.parts.push variant }
 
+  before do
+    variant.stock_items.first.set_count_on_hand(count_on_hand)
+  end
+
   shared_context "purchases product with part included" do
     before do
-      add_product_to_cart
+      add_product_to_cart(product)
       click_button "Checkout"
 
       fill_in "order_email", :with => "ryan@spreecommerce.com"
@@ -51,9 +56,7 @@ describe "Checkout", type: :feature do
 
     context "ordering assembly and the part as individual sale" do
       before do
-        visit spree.root_path
-        click_link variant.product.name
-        click_button "add-to-cart-button"
+        add_product_to_cart(variant.product)
       end
       include_context "purchases product with part included"
 
@@ -61,6 +64,10 @@ describe "Checkout", type: :feature do
         visit spree.admin_orders_path
         click_on Spree::Order.last.number
 
+        within '.product-bundles' do
+          expect(page).to have_content(product.name)
+        end
+        expect(page).to have_css('.stock-contents .stock-item', count: 2)
         page.should have_content(variant.product.name)
       end
     end
@@ -79,7 +86,7 @@ describe "Checkout", type: :feature do
     fill_in "#{address}_phone", :with => "(555) 555-5555"
   end
 
-  def add_product_to_cart
+  def add_product_to_cart(product)
     visit spree.root_path
     click_link product.name
     click_button "add-to-cart-button"
